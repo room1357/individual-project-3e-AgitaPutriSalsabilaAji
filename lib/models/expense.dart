@@ -15,11 +15,9 @@ class Expense {
     required this.description,
   });
 
-  // Getter untuk format tampilan mata uang
-  String get formattedAmount => 'Rp ${amount.toStringAsFixed(0)}';
-  
-  // Getter untuk format tampilan tanggal
-  String get formattedDate {
-    return '${date.day}/${date.month}/${date.year}';
-  }
+  String get formattedDate =>
+      '${date.day}/${date.month}/${date.year}';
+
+  String get formattedAmount =>
+      'Rp ${amount.toStringAsFixed(0)}';
 }

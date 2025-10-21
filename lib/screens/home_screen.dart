@@ -1,22 +1,50 @@
 import 'package:flutter/material.dart';
-import 'advanced_expense_list_screen.dart';
 import 'profile_screen.dart';
 import 'setting_screen.dart';
+import 'advanced_expense_list_screen.dart';
+import 'login_screen.dart'; // pastikan file ini ada untuk halaman login
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  // Fungsi logout (bisa dipanggil dari AppBar atau Drawer)
+  void _logout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Logout'),
+          content: const Text('Apakah Anda yakin ingin keluar dari akun ini?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(), // batal
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop(); // tutup dialog
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
+              },
+              child: const Text('Ya, Keluar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Home'),
+        title: const Text('Beranda'),
         backgroundColor: Colors.blue,
         actions: [
           IconButton(
-            onPressed: () {
-              // Handle logout
-            },
+            onPressed: () => _logout(context), // panggil fungsi logout
             icon: const Icon(Icons.logout),
           ),
         ],
@@ -25,13 +53,11 @@ class HomeScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Colors.blue,
-              ),
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.blue),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   CircleAvatar(
                     radius: 30,
                     backgroundColor: Colors.white,
@@ -39,7 +65,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Welcome User!',
+                    'Selamat Datang, Pengguna!',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -51,51 +77,47 @@ class HomeScreen extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () {
-                Navigator.pop(context);
-              },
+              title: const Text('Beranda'),
+              onTap: () => Navigator.pop(context),
             ),
             ListTile(
               leading: const Icon(Icons.person),
-              title: const Text('Profile'),
+              title: const Text('Profil'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()),
                 );
               },
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
+              title: const Text('Pengaturan'),
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
                 );
               },
             ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () {
-                // Handle logout
-              },
+              title: const Text('Keluar'),
+              onTap: () => _logout(context), // panggil fungsi logout
             ),
           ],
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Dashboard',
+              'Menu Utama',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -109,11 +131,15 @@ class HomeScreen extends StatelessWidget {
                 crossAxisSpacing: 16,
                 mainAxisSpacing: 16,
                 children: [
-                  _buildDashboardCard(context, 'Profile', Icons.person, Colors.green),
-                  _buildDashboardCard(context, 'Pengeluaran', Icons.list_alt, Colors.teal),
-                  _buildDashboardCard(context, 'Messages', Icons.message, Colors.orange),
-                  _buildDashboardCard(context, 'Settings', Icons.settings, Colors.purple),
-                  _buildDashboardCard(context, 'Help', Icons.help, Colors.red),
+                  _buildMenuCard(context, 'Profil', Icons.person, Colors.green),
+                  _buildMenuCard(context, 'Manajer Pengeluaran',
+                      Icons.account_balance_wallet, Colors.teal),
+                  _buildMenuCard(
+                      context, 'Pesan', Icons.message, Colors.orange),
+                  _buildMenuCard(
+                      context, 'Pengaturan', Icons.settings, Colors.purple),
+                  _buildMenuCard(
+                      context, 'Bantuan', Icons.help, Colors.red),
                 ],
               ),
             ),
@@ -123,33 +149,35 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-Widget _buildDashboardCard(BuildContext context, String title, IconData icon, Color color) {
+  Widget _buildMenuCard(
+      BuildContext context, String title, IconData icon, Color color) {
     return Card(
       elevation: 4,
       child: InkWell(
         onTap: () {
           switch (title) {
-            case 'Profile':
+            case 'Profil':
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                MaterialPageRoute(builder: (_) => const ProfileScreen()),
               );
               break;
-            case 'Settings':
+            case 'Manajer Pengeluaran':
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                MaterialPageRoute(
+                    builder: (_) => const AdvancedExpenseListScreen()),
               );
               break;
-            case 'Pengeluaran':
+            case 'Pengaturan':
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => AdvancedExpenseListScreen()),
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
               );
               break;
             default:
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('$title diklik')),
+                SnackBar(content: Text('Menu "$title" diklik')),
               );
           }
         },

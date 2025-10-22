@@ -50,6 +50,18 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
       initialDate: _date,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.teal,
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -61,68 +73,151 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Edit Pengeluaran')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Judul Pengeluaran',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) =>
-                    value!.isEmpty ? 'Masukkan judul' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _amountController,
-                decoration: const InputDecoration(
-                  labelText: 'Jumlah (Rp)',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) =>
-                    value!.isEmpty ? 'Masukkan jumlah' : null,
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Deskripsi',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Tanggal: ${_date.day}/${_date.month}/${_date.year}',
-                      style: const TextStyle(fontSize: 16),
+      appBar: AppBar(
+        title: const Text(
+          'Edit Pengeluaran',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.teal,
+         iconTheme: const IconThemeData(color: Colors.white),
+        centerTitle: true,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFE0F2F1), Color(0xFFB2DFDB)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Card(
+            elevation: 6,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shadowColor: Colors.teal.withOpacity(0.3),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  children: [
+                    TextFormField(
+                      controller: _titleController,
+                      decoration: InputDecoration(
+                        labelText: 'Judul Pengeluaran',
+                        prefixIcon:
+                            const Icon(Icons.title, color: Colors.teal),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.teal.withOpacity(0.05),
+                      ),
+                      validator: (value) =>
+                          value!.isEmpty ? 'Masukkan judul' : null,
                     ),
-                  ),
-                  IconButton(
-                    onPressed: _pickDate,
-                    icon: const Icon(Icons.calendar_today),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: _saveChanges,
-                icon: const Icon(Icons.save),
-                label: const Text('Simpan Perubahan'),
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 50),
-                  backgroundColor: Colors.blue,
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: _amountController,
+                      decoration: InputDecoration(
+                        labelText: 'Jumlah (Rp)',
+                        prefixIcon:
+                            const Icon(Icons.attach_money, color: Colors.teal),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.teal.withOpacity(0.05),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: (value) =>
+                          value!.isEmpty ? 'Masukkan jumlah' : null,
+                    ),
+                    const SizedBox(height: 16),
+
+                    DropdownButtonFormField<String>(
+                      value: _category,
+                      decoration: InputDecoration(
+                        labelText: 'Kategori',
+                        prefixIcon:
+                            const Icon(Icons.category, color: Colors.teal),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      items: <String>[
+                        'Makanan',
+                        'Transport',
+                        'Hiburan',
+                        'Lainnya'
+                      ].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (val) {
+                        setState(() {
+                          _category = val!;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration: InputDecoration(
+                        labelText: 'Deskripsi / Catatan',
+                        prefixIcon:
+                            const Icon(Icons.notes, color: Colors.teal),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        filled: true,
+                        fillColor: Colors.teal.withOpacity(0.05),
+                      ),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16),
+
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading:
+                          const Icon(Icons.calendar_today, color: Colors.teal),
+                      title: Text(
+                        'Tanggal: ${_date.day}/${_date.month}/${_date.year}',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      trailing: IconButton(
+                        onPressed: _pickDate,
+                        icon: const Icon(Icons.edit_calendar,
+                            color: Colors.teal),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    ElevatedButton.icon(
+                      onPressed: _saveChanges,
+                      icon: const Icon(Icons.save),
+                      label: const Text('Simpan Perubahan'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        textStyle: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

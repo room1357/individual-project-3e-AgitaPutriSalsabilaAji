@@ -16,7 +16,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Tambah Kategori', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Tambah Kategori',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         content: TextField(
           controller: controller,
           decoration: const InputDecoration(
@@ -60,7 +61,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Edit Kategori', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Edit Kategori',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         content: TextField(
           controller: controller,
           decoration: const InputDecoration(
@@ -102,7 +104,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Hapus Kategori'),
-        content: Text('Apakah kamu yakin ingin menghapus kategori "${category.name}"?'),
+        content:
+            Text('Apakah kamu yakin ingin menghapus kategori "${category.name}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -136,95 +139,94 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kelola Kategori'),
+        title: const Text('Kelola Kategori', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.teal,
         elevation: 2,
-        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      backgroundColor: Colors.teal.shade50,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFE0F2F1), Color(0xFFB2DFDB)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: categories.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.category_outlined,
+                        size: 80, color: Colors.grey.shade400),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Belum ada kategori 😢',
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: _addCategory,
+                      icon: const Icon(Icons.add),
+                      label: const Text('Tambah Sekarang'),
+                    ),
+                  ],
+                ),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  final category = categories[index];
+                  return Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    color: Colors.white.withOpacity(0.9),
+                    shadowColor: Colors.teal.withOpacity(0.3),
+                    margin: const EdgeInsets.symmetric(vertical: 6),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.teal.shade50,
+                        child: const Icon(Icons.label, color: Colors.teal),
+                      ),
+                      title: Text(
+                        category.name,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w500),
+                      ),
+                      trailing: Wrap(
+                        spacing: 4,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit, color: Colors.blue),
+                            onPressed: () => _editCategory(category),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _deleteCategory(category),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+      ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.teal,
+        foregroundColor: Colors.white,
         onPressed: _addCategory,
         icon: const Icon(Icons.add),
-        label: const Text('Tambah'),
+        label: const Text('Tambah', style: TextStyle(color: Colors.white), ),
       ),
-      body: categories.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.category_outlined, size: 80, color: Colors.grey.shade400),
-                  const SizedBox(height: 10),
-                  const Text(
-                    'Belum ada kategori 😢',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: _addCategory,
-                    icon: const Icon(Icons.add),
-                    label: const Text('Tambah Sekarang'),
-                  ),
-                ],
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        blurRadius: 6,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.teal.shade100,
-                      child: const Icon(Icons.label, color: Colors.teal),
-                    ),
-                    title: Text(
-                      category.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                      ),
-                    ),
-                    trailing: Wrap(
-                      spacing: 4,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blueAccent),
-                          tooltip: 'Edit',
-                          onPressed: () => _editCategory(category),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.redAccent),
-                          tooltip: 'Hapus',
-                          onPressed: () => _deleteCategory(category),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
     );
   }
 }

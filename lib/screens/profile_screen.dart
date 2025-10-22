@@ -1,4 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -8,17 +12,99 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  // Data profil (bisa diedit)
   String name = 'Nama Pengguna';
   String email = 'user@email.com';
   String phone = '+62 812 3456 7890';
   String address = 'Malang, Jawa Timur';
   String job = 'Mahasiswa';
 
-  // Fungsi untuk menampilkan dialog edit
+  File? _image; 
+  final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadImage();
+  }
+
+  Future<void> _loadImage() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/profile_image.png');
+    if (await file.exists()) {
+      setState(() {
+        _image = file;
+      });
+    }
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      if (source == ImageSource.camera) {
+        var status = await Permission.camera.request();
+        if (!status.isGranted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Izin kamera ditolak')),
+          );
+          return;
+        }
+      } else {
+        var status = await Permission.photos.request();
+        if (!status.isGranted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Izin galeri ditolak')),
+          );
+          return;
+        }
+      }
+
+      final pickedFile = await _picker.pickImage(source: source, imageQuality: 80);
+      if (pickedFile != null) {
+        final dir = await getApplicationDocumentsDirectory();
+        final savedImage = await File(pickedFile.path).copy('${dir.path}/profile_image.png');
+
+        setState(() {
+          _image = savedImage;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal mengambil gambar: $e')),
+      );
+    }
+  }
+
+  void _showImageSourceDialog() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext ctx) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Pilih dari Galeri'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Ambil dari Kamera'),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _pickImage(ImageSource.camera);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _editField(String title, String currentValue, Function(String) onSave) {
-    final TextEditingController controller =
-        TextEditingController(text: currentValue);
+    final TextEditingController controller = TextEditingController(text: currentValue);
 
     showDialog(
       context: context,
@@ -57,134 +143,167 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-      body: Column(
-        children: [
-          // Bagian atas dengan gradient
-          Container(
-            height: 220,
-            width: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF2196F3), Color(0xFF42A5F5)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(30),
-              ),
-            ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 30),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const CircleAvatar(
-                  radius: 45,
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.person,
-                    size: 60,
-                    color: Colors.blue,
+                // 🔹 Bagian atas gradient teal
+                Container(
+                  height: screenWidth < 400 ? 200 : 240,
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.teal, Colors.tealAccent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(30),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Stack(
+                        children: [
+                          GestureDetector(
+                            onTap: _showImageSourceDialog,
+                            child: CircleAvatar(
+                              radius: screenWidth < 380 ? 40 : 50,
+                              backgroundColor: Colors.white,
+                              backgroundImage:
+                                  _image != null ? FileImage(_image!) : null,
+                              child: _image == null
+                                  ? const Icon(Icons.person,
+                                      size: 60, color: Colors.teal)
+                                  : null,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: InkWell(
+                              onTap: _showImageSourceDialog,
+                              child: Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.edit,
+                                    color: Colors.teal, size: 20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        name,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: screenWidth < 380 ? 20 : 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        email,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: screenWidth < 380 ? 13 : 15,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+
+                const SizedBox(height: 30),
+
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth < 380 ? 12 : 20),
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 24),
+                      child: Column(
+                        children: [
+                        _buildProfileItem('Nama', Icons.person, Colors.teal, name, 
+                            (val) => setState(() => name = val)),
+                        const Divider(),
+                        _buildProfileItem('Email', Icons.email, Colors.orange, email, 
+                            (val) => setState(() => email = val)),
+                        const Divider(),
+                        _buildProfileItem('Nomor Telepon', Icons.phone, Colors.teal, phone, 
+                            (val) => setState(() => phone = val)),
+                        const Divider(),
+                        _buildProfileItem('Alamat', Icons.location_on, Colors.redAccent, address, 
+                            (val) => setState(() => address = val)),
+                        const Divider(),
+                        _buildProfileItem('Pekerjaan', Icons.work, Colors.green, job, 
+                            (val) => setState(() => job = val)),
+                      ],
+                      ),
+                    ),
                   ),
                 ),
-                Text(
-                  email,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: Colors.white70,
+
+                const SizedBox(height: 30),
+
+                ElevatedButton.icon(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.white),
+                  label: const Text(
+                    'Kembali',
+                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal, 
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth < 380 ? 22 : 28,
+                      vertical: screenWidth < 380 ? 12 : 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 3,
                   ),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
 
-          const SizedBox(height: 30),
-
-          // Informasi profil dalam card
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.phone, color: Colors.blue),
-                      title: const Text('Nomor Telepon'),
-                      subtitle: Text(phone),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.grey),
-                        onPressed: () =>
-                            _editField('Nomor Telepon', phone, (val) => phone = val),
-                      ),
-                    ),
-                    const Divider(),
-                    ListTile(
-                      leading:
-                          const Icon(Icons.location_on, color: Colors.redAccent),
-                      title: const Text('Alamat'),
-                      subtitle: Text(address),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.grey),
-                        onPressed: () =>
-                            _editField('Alamat', address, (val) => address = val),
-                      ),
-                    ),
-                    const Divider(),
-                    ListTile(
-                      leading: const Icon(Icons.work, color: Colors.green),
-                      title: const Text('Pekerjaan'),
-                      subtitle: Text(job),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.grey),
-                        onPressed: () =>
-                            _editField('Pekerjaan', job, (val) => job = val),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          const Spacer(),
-
-          // Tombol keluar / kembali
-          Padding(
-            padding: const EdgeInsets.only(bottom: 30),
-            child: ElevatedButton.icon(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back_ios_new, size: 18),
-              label: const Text(
-                'Kembali',
-                style: TextStyle(fontSize: 16),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 3,
-              ),
-            ),
-          ),
-        ],
+  Widget _buildProfileItem(
+    String title,
+    IconData icon,
+    Color color,
+    String value,
+    Function(String) onSave,
+  ) {
+    return ListTile(
+      leading: Icon(icon, color: color),
+      title: Text(title),
+      subtitle: Text(value),
+      trailing: IconButton(
+        icon: const Icon(Icons.edit, color: Colors.grey),
+        onPressed: () => _editField(title, value, onSave),
       ),
     );
   }

@@ -3,16 +3,74 @@ import 'package:fl_chart/fl_chart.dart';
 import '../data/global_expense.dart';
 import '../models/expense.dart';
 
-class StatisticsScreen extends StatelessWidget {
+class StatisticsScreen extends StatefulWidget {
   const StatisticsScreen({super.key});
 
-  // Hitung total pengeluaran per kategori
+  @override
+  State<StatisticsScreen> createState() => _StatisticsScreenState();
+}
+
+class _StatisticsScreenState extends State<StatisticsScreen> {
+  DateTimeRange? selectedRange;
+
   Map<String, double> _calculateCategoryTotals(List<Expense> expenses) {
     final Map<String, double> totals = {};
     for (var e in expenses) {
+      if (selectedRange != null) {
+        final expenseDate = DateTime(e.date.year, e.date.month, e.date.day);
+        final startDate = DateTime(selectedRange!.start.year,
+            selectedRange!.start.month, selectedRange!.start.day);
+        final endDate = DateTime(
+            selectedRange!.end.year, selectedRange!.end.month, selectedRange!.end.day);
+
+        if (expenseDate.isBefore(startDate) || expenseDate.isAfter(endDate)) {
+          continue;
+        }
+      }
+
       totals[e.category] = (totals[e.category] ?? 0) + e.amount;
     }
     return totals;
+  }
+
+  Future<void> _pickDateRange(BuildContext context) async {
+    final now = DateTime.now();
+
+    // Gunakan tampilan fullscreen agar lebih cocok untuk mobile
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: now,
+      initialDateRange: selectedRange ??
+          DateTimeRange(
+            start: DateTime(now.year, now.month, 1),
+            end: now,
+          ),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.teal,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black87,
+            ),
+          ),
+          child: Center(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
+              child: child,
+            ),
+          ),
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        selectedRange = picked;
+      });
+    }
   }
 
   @override
@@ -21,9 +79,40 @@ class StatisticsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Statistik Pengeluaran'),
+        title: const Text(
+          'Statistik Pengeluaran',
+          style: TextStyle(color: Colors.white),
+          
+        ),
         backgroundColor: Colors.teal,
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          TextButton.icon(
+            onPressed: () => _pickDateRange(context),
+            icon: const Icon(
+              Icons.date_range,
+              color: Colors.white,
+            ),
+            label: const Text(
+              'Pilih Tanggal',
+              style: TextStyle(color: Colors.white,),),
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   backgroundColor: Colors.teal,
+      //   icon: const Icon(Icons.date_range, color: Colors.white),
+      //   label: const Text(
+      //     'Pilih Tanggal',
+      //     style: TextStyle(color: Colors.white),
+      //   ),
+      //   onPressed: () => _pickDateRange(context),
+      // ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: data.isEmpty
@@ -36,6 +125,19 @@ class StatisticsScreen extends StatelessWidget {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (selectedRange != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Text(
+                        'Periode: ${selectedRange!.start.day}/${selectedRange!.start.month}/${selectedRange!.start.year} '
+                        '- ${selectedRange!.end.day}/${selectedRange!.end.month}/${selectedRange!.end.year}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.teal,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   const Text(
                     'Total Pengeluaran per Kategori',
                     style: TextStyle(
@@ -45,8 +147,6 @@ class StatisticsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // ===== GRAFIK BATANG =====
                   Expanded(
                     child: BarChart(
                       BarChartData(
@@ -63,23 +163,25 @@ class StatisticsScreen extends StatelessWidget {
                               return BarTooltipItem(
                                 '$category\nRp$value',
                                 const TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.bold),
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               );
                             },
                           ),
                         ),
                         titlesData: FlTitlesData(
-                          topTitles:
-                              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                          rightTitles:
-                              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false)),
+                          rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false)),
                           leftTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
                               reservedSize: 60,
                               interval: (data.values.isNotEmpty)
-                                  ? (data.values.reduce((a, b) => a > b ? a : b) / 5)
+                                  ? (data.values.reduce((a, b) => a > b ? a : b) /
+                                          5)
                                       .ceilToDouble()
                                   : 1000,
                               getTitlesWidget: (value, _) => Text(
@@ -129,10 +231,7 @@ class StatisticsScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
-                  // ===== TOTAL KESELURUHAN =====
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),

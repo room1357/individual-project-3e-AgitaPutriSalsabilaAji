@@ -2,53 +2,54 @@
 
 A new Flutter project.
 
-# Aplikasi Manajer Pengeluaran Pribadi
+# 💰 Aplikasi Manajer Pengeluaran Pribadi
 
 Aplikasi ini membantu pengguna dalam **mengelola pengeluaran harian** dengan mudah dan efisien.  
 Tersedia berbagai fitur seperti pencatatan pengeluaran, pengelompokan kategori, serta tampilan statistik untuk memantau keuangan pribadi secara keseluruhan.
 
-## Fitur-Fitur Aplikasi
+---
+
+## 🧩 Fitur-Fitur Aplikasi
 
 1. **Fitur Login dan Register**  
    - Login  
-     ![Login](images/Login.jpg)  
+     <img src="images/Login.jpg" alt="Login" width="400">  
    - Register  
-     ![Register](images/Register.jpg)
+     <img src="images/Register.jpg" alt="Register" width="400">
 
 2. **Halaman Menu Utama**  
-   ![Halaman Menu Utama](images/Halaman_Menu_Utama.jpg)
+   <img src="images/Halaman_Menu_Utama.jpg" alt="Halaman Menu Utama" width="400">
 
 3. **Halaman Profil (Edit, Permission Untuk Foto Profil)**  
    - Edit Data Profil  
-     ![Edit Data Profil](images/Edit_Data_Profil.jpg)  
+     <img src="images/Edit_Data_Profil.jpg" alt="Edit Data Profil" width="400">  
    - Edit Foto Profil  
-     ![Edit Foto Profil](images/Edit_Foto_Profil.jpg)  
+     <img src="images/Edit_Foto_Profil.jpg" alt="Edit Foto Profil" width="400">  
    - Permission Kamera  
-     ![Permission Kamera](images/Permission_Kamera.jpg)
+     <img src="images/Permission_Kamera.jpg" alt="Permission Kamera" width="400">
 
 4. **Halaman Menu Manajer Pengeluaran**  
    - Daftar Pengeluaran  
-     ![Daftar Pengeluaran](images/Daftar_Pengeluaran.jpg)  
+     <img src="images/Daftar_Pengeluaran.jpg" alt="Daftar Pengeluaran" width="400">  
    - Tambah Pengeluaran  
-     ![Tambah Pengeluaran](images/Tambah_Pengeluaran.jpg)  
+     <img src="images/Tambah_Pengeluaran.jpg" alt="Tambah Pengeluaran" width="400">  
    - Statistik Pengeluaran  
-     ![Statistik Pengeluaran](images/Statistik_Pengeluaran.jpg)  
+     <img src="images/Statistik_Pengeluaran.jpg" alt="Statistik Pengeluaran" width="400">  
    - Kelola Kategori  
-     ![Kelola Kategori](images/Kelola_Kategori.jpg)
+     <img src="images/Kelola_Kategori.jpg" alt="Kelola Kategori" width="400">
 
 5. **Halaman Kelola Kategori (Edit, Hapus)**  
    - Edit Pengeluaran  
-     ![Edit Pengeluaran](images/Edit_Pengeluaran.jpg)
+     <img src="images/Edit_Pengeluaran.jpg" alt="Edit Pengeluaran" width="400">
 
 6. **Halaman Tambah Kategori**  
-   ![Tambah Kategori](images/Tambah_Kategori.png)
+   <img src="images/Tambah_Kategori.png" alt="Tambah Kategori" width="400">
 
 7. **Halaman Daftar Pengeluaran (Edit, Hapus)**  
-   ![Daftar Pengeluaran](images/Daftar_Pengeluaran.jpg)
+   <img src="images/Daftar_Pengeluaran.jpg" alt="Daftar Pengeluaran" width="400">
 
 8. **Halaman Statistik Pengeluaran (Pemilihan Tanggal)**  
-   ![Pilih Tanggal](images/Pilih_Tanggal.jpg)
+   <img src="images/Pilih_Tanggal.jpg" alt="Pilih Tanggal" width="400">
 
 9. **Fitur Logout**  
-   ![Logout](images/Logout.jpg)
-
+   <img src="images/Logout.jpg" alt="Logout" width="400">

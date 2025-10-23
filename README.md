@@ -2,15 +2,53 @@
 
 A new Flutter project.
 
-## Getting Started
+# Aplikasi Manajer Pengeluaran Pribadi
 
-This project is a starting point for a Flutter application.
+Aplikasi ini membantu pengguna dalam **mengelola pengeluaran harian** dengan mudah dan efisien.  
+Tersedia berbagai fitur seperti pencatatan pengeluaran, pengelompokan kategori, serta tampilan statistik untuk memantau keuangan pribadi secara keseluruhan.
 
-A few resources to get you started if this is your first Flutter project:
+## Fitur-Fitur Aplikasi
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+1. **Fitur Login dan Register**  
+   - Login  
+     ![Login](images/Login.jpg)  
+   - Register  
+     ![Register](images/Register.jpg)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+2. **Halaman Menu Utama**  
+   ![Halaman Menu Utama](images/Halaman_Menu_Utama.jpg)
+
+3. **Halaman Profil (Edit, Permission Untuk Foto Profil)**  
+   - Edit Data Profil  
+     ![Edit Data Profil](images/Edit_Data_Profil.jpg)  
+   - Edit Foto Profil  
+     ![Edit Foto Profil](images/Edit_Foto_Profil.jpg)  
+   - Permission Kamera  
+     ![Permission Kamera](images/Permission_Kamera.jpg)
+
+4. **Halaman Menu Manajer Pengeluaran**  
+   - Daftar Pengeluaran  
+     ![Daftar Pengeluaran](images/Daftar_Pengeluaran.jpg)  
+   - Tambah Pengeluaran  
+     ![Tambah Pengeluaran](images/Tambah_Pengeluaran.jpg)  
+   - Statistik Pengeluaran  
+     ![Statistik Pengeluaran](images/Statistik_Pengeluaran.jpg)  
+   - Kelola Kategori  
+     ![Kelola Kategori](images/Kelola_Kategori.jpg)
+
+5. **Halaman Kelola Kategori (Edit, Hapus)**  
+   - Edit Pengeluaran  
+     ![Edit Pengeluaran](images/Edit_Pengeluaran.jpg)
+
+6. **Halaman Tambah Kategori**  
+   ![Tambah Kategori](images/Tambah_Kategori.png)
+
+7. **Halaman Daftar Pengeluaran (Edit, Hapus)**  
+   ![Daftar Pengeluaran](images/Daftar_Pengeluaran.jpg)
+
+8. **Halaman Statistik Pengeluaran (Pemilihan Tanggal)**  
+   ![Pilih Tanggal](images/Pilih_Tanggal.jpg)
+
+9. **Fitur Logout**  
+   ![Logout](images/Logout.jpg)
+
